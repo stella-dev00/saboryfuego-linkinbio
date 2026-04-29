@@ -261,3 +261,41 @@ body {
     cursor: pointer;
     font-size: 16px;
 }
+
+/* Barra de Carrito Flotante */
+.cart-bar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 440px;
+    background-color: var(--text-color);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.cart-bar.hidden {
+    display: none;
+}
+
+.cart-info {
+    font-size: 14px;
+}
+
+.btn-send-order {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
