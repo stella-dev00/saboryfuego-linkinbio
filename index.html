@@ -92,11 +92,17 @@
             </div>
         </main>
 
-        <!-- Logistics -->
         <section class="logistics">
             <p>📍 <strong>Envíos:</strong> Col. Roma, Condesa, Juárez y Polanco ($35 MXN).</p>
             <p>💳 <strong>Pagos:</strong> SPEI, OXXO y Efectivo contra entrega.</p>
         </section>
+
+        <footer class="social-links">
+            <a href="#" class="btn-social">Instagram</a>
+            <a href="#" class="btn-social">TikTok</a>
+            <a href="#" class="btn-social">Facebook</a>
+            <a href="#" class="btn-social">Google Maps</a>
+        </footer>
 
         <div id="cart-bar" class="cart-bar hidden">
             <div class="cart-info">
@@ -106,126 +112,120 @@
                 Enviar Pedido
             </button>
         </div>
-        <!-- Social Links -->
-        <footer class="social-links">
-            <a href="#" class="btn-social">Instagram</a>
-            <a href="#" class="btn-social">TikTok</a>
-            <a href="#" class="btn-social">Facebook</a>
-            <a href="#" class="btn-social">Google Maps</a>
-        </footer>
-    </div>
-    <script>
-const cart = {};
-const phone = "525587654321"; // Tu WhatsApp real
 
-// 1. Filtros
-document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const filter = btn.getAttribute('data-filter');
-        document.querySelectorAll('.product-card').forEach(p => {
-            p.classList.toggle('hidden', filter !== 'all' && p.getAttribute('data-category') !== filter);
+        <div id="order-modal" class="modal hidden">
+            <div class="modal-content">
+                <h3>Revisa tu Pedido</h3>
+                <div id="summary-list"></div>
+                
+                <div class="extra-notes">
+                    <label for="order-notes">Instrucciones especiales:</label>
+                    <textarea id="order-notes" placeholder="Ej. Sin cebolla, que la gringa esté bien tostada..."></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button id="btn-close-modal" class="btn-secondary">Volver</button>
+                    <button id="btn-confirm-whatsapp" class="btn-primary">Enviar a WhatsApp</button>
+                </div>
+            </div>
+        </div>
+
+    </div> <script>
+        const cart = {};
+        const phone = "525587654321"; // Reemplaza con tu WhatsApp real
+
+        // Filtros de categorías
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const filter = btn.getAttribute('data-filter');
+                document.querySelectorAll('.product-card').forEach(p => {
+                    p.classList.toggle('hidden', filter !== 'all' && p.getAttribute('data-category') !== filter);
+                });
+            });
         });
-    });
-});
 
-// 2. Control de Cantidades (Corregido)
-document.querySelectorAll('.product-card').forEach(card => {
-    const name = card.getAttribute('data-name');
-    const price = parseInt(card.getAttribute('data-price')) || 0;
-    const qtyDisplay = card.querySelector('.qty-number');
+        // Control de Cantidades
+        document.querySelectorAll('.product-card').forEach(card => {
+            const name = card.getAttribute('data-name');
+            const price = parseInt(card.getAttribute('data-price')) || 0;
+            const qtyDisplay = card.querySelector('.qty-number');
 
-    card.querySelector('.plus').onclick = () => {
-        let currentQty = parseInt(qtyDisplay.textContent);
-        currentQty++;
-        updateCart(name, price, currentQty, qtyDisplay);
-    };
+            card.querySelector('.plus').onclick = () => {
+                let currentQty = parseInt(qtyDisplay.textContent);
+                currentQty++;
+                updateCart(name, price, currentQty, qtyDisplay);
+            };
 
-    card.querySelector('.minus').onclick = () => {
-        let currentQty = parseInt(qtyDisplay.textContent);
-        if (currentQty > 0) {
-            currentQty--;
-            updateCart(name, price, currentQty, qtyDisplay);
+            card.querySelector('.minus').onclick = () => {
+                let currentQty = parseInt(qtyDisplay.textContent);
+                if (currentQty > 0) {
+                    currentQty--;
+                    updateCart(name, price, currentQty, qtyDisplay);
+                }
+            };
+        });
+
+        function updateCart(name, price, qty, display) {
+            display.textContent = qty;
+            if (qty > 0) cart[name] = { qty, price };
+            else delete cart[name];
+            renderCartBar();
         }
-    };
-});
 
-function updateCart(name, price, qty, display) {
-    display.textContent = qty;
-    if (qty > 0) cart[name] = { qty, price };
-    else delete cart[name];
-    renderCartBar();
-}
+        function renderCartBar() {
+            let totalItems = 0; let totalMoney = 0;
+            Object.values(cart).forEach(item => {
+                totalItems += item.qty;
+                totalMoney += (item.qty * item.price);
+            });
 
-function renderCartBar() {
-    let totalItems = 0; let totalMoney = 0;
-    Object.values(cart).forEach(item => {
-        totalItems += item.qty;
-        totalMoney += (item.qty * item.price);
-    });
+            const bar = document.getElementById('cart-bar');
+            if (totalItems > 0) {
+                bar.classList.remove('hidden');
+                document.getElementById('total-items').textContent = totalItems;
+                document.getElementById('total-price').textContent = `$${totalMoney} MXN`;
+            } else {
+                bar.classList.add('hidden');
+            }
+        }
 
-    const bar = document.getElementById('cart-bar');
-    if (totalItems > 0) {
-        bar.classList.remove('hidden');
-        document.getElementById('total-items').textContent = totalItems;
-        document.getElementById('total-price').textContent = `$${totalMoney} MXN`;
-    } else {
-        bar.classList.add('hidden');
-    }
-}
+        // Mostrar el Modal de Resumen al hacer clic en "Enviar Pedido"
+        const modal = document.getElementById('order-modal');
+        document.getElementById('btn-whatsapp-send').onclick = () => {
+            const list = document.getElementById('summary-list');
+            list.innerHTML = '';
+            let grandTotal = 0;
 
-// 3. Modal de Resumen
-const modal = document.getElementById('order-modal');
-document.getElementById('btn-whatsapp-send').onclick = () => {
-    const list = document.getElementById('summary-list');
-    list.innerHTML = '';
-    let grandTotal = 0;
+            for (const [name, data] of Object.entries(cart)) {
+                const sub = data.qty * data.price;
+                grandTotal += sub;
+                list.innerHTML += `<div class="summary-item"><span>${data.qty}x ${name}</span> <span>$${sub} MXN</span></div>`;
+            }
+            list.innerHTML += `<hr><div class="summary-item" style="font-size: 16px; margin-top: 10px;"><strong>TOTAL</strong> <strong style="color: #E63946;">$${grandTotal} MXN</strong></div>`;
+            modal.classList.remove('hidden');
+        };
 
-    for (const [name, data] of Object.entries(cart)) {
-        const sub = data.qty * data.price;
-        grandTotal += sub;
-        list.innerHTML += `<div class="summary-item"><span>${data.qty}x ${name}</span> <span>$${sub}</span></div>`;
-    }
-    list.innerHTML += `<hr><div class="summary-item"><strong>TOTAL</strong> <strong>$${grandTotal} MXN</strong></div>`;
-    modal.classList.remove('hidden');
-};
+        // Botón Volver (Cerrar modal)
+        document.getElementById('btn-close-modal').onclick = () => modal.classList.add('hidden');
 
-document.getElementById('btn-close-modal').onclick = () => modal.classList.add('hidden');
+        // Envío Final a WhatsApp
+        document.getElementById('btn-confirm-whatsapp').onclick = () => {
+            const notes = document.getElementById('order-notes').value;
+            let message = "¡Hola! Quiero hacer un pedido:\n\n";
+            let total = 0;
 
-// 4. Envío Final
-document.getElementById('btn-confirm-whatsapp').onclick = () => {
-    const notes = document.getElementById('order-notes').value;
-    let message = "¡Hola! Quiero hacer un pedido:\n\n";
-    let total = 0;
+            for (const [name, data] of Object.entries(cart)) {
+                message += `• ${data.qty}x ${name} ($${data.qty * data.price})\n`;
+                total += (data.qty * data.price);
+            }
+            
+            if(notes.trim() !== '') message += `\n📝 *Notas:* ${notes}\n`;
+            message += `\n💰 *Total: $${total} MXN*`;
 
-    for (const [name, data] of Object.entries(cart)) {
-        message += `• ${data.qty}x ${name} ($${data.qty * data.price})\n`;
-        total += (data.qty * data.price);
-    }
-    
-    if(notes) message += `\n📝 *Notas:* ${notes}\n`;
-    message += `\n💰 *Total: $${total} MXN*`;
-
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
-};
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+        };
     </script>
-
-    <div id="order-modal" class="modal hidden">
-    <div class="modal-content">
-        <h3>Revisa tu Pedido</h3>
-        <div id="summary-list"></div>
-        
-        <div class="extra-notes">
-            <label for="order-notes">Instrucciones especiales:</label>
-            <textarea id="order-notes" placeholder="Ej. Sin cebolla, que la gringa esté bien tostada..."></textarea>
-        </div>
-
-        <div class="modal-actions">
-            <button id="btn-close-modal" class="btn-secondary">Volver</button>
-            <button id="btn-confirm-whatsapp" class="btn-primary">Enviar a WhatsApp</button>
-        </div>
-    </div>
-</div>
 </body>
 </html>
