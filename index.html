@@ -36,7 +36,15 @@
                     <h4 class="product-name">Orden de Tacos al Pastor (3)</h4>
                     <p class="product-desc">Carne marinada 24h, piña miel, cebolla y cilantro. Tortilla de maíz criollo.</p>
                     <p class="product-price">$95 MXN</p>
-                    <a href="https://wa.me/525587654321?text=¡Hola!%20Vengo%20de%20su%20menú%20digital.%20Me%20gustaría%20ordenar:%20Orden%20de%20Tacos%20al%20Pastor%20($95)." target="_blank" class="btn-buy">Pedir ahora</a>
+                    
+                    <div class="order-controls">
+                        <div class="qty-selector">
+                            <button class="btn-qty minus">-</button>
+                            <span class="qty-number">1</span>
+                            <button class="btn-qty plus">+</button>
+                        </div>
+                        <button class="btn-buy" data-phone="525587654321" data-product="Orden de Tacos al Pastor" data-price="95">Pedir</button>
+                    </div>
                 </div>
             </div>
 
@@ -46,7 +54,15 @@
                     <h4 class="product-name">Gringa de Sirloin</h4>
                     <p class="product-desc">Corte de sirloin a la plancha, queso oaxaca fundido y tortilla de harina artesanal.</p>
                     <p class="product-price">$120 MXN</p>
-                    <a href="https://wa.me/525587654321?text=¡Hola!%20Vengo%20de%20su%20menú%20digital.%20Me%20gustaría%20ordenar:%20Gringa%20de%20Sirloin%20($120)." target="_blank" class="btn-buy">Pedir ahora</a>
+                    <div class="order-controls">
+                        <div class="qty-selector">
+                            <button class="btn-qty minus">-</button>
+                            <span class="qty-number">1</span>
+                            <button class="btn-qty plus">+</button>
+                        </div>
+                        <button class="btn-buy" data-phone="525587654321" data-product="Gringa de Sirloin" data-price="120">Pedir</button>
+                    </div>
+                </div>
                 </div>
             </div>
 
@@ -56,7 +72,14 @@
                     <h4 class="product-name">Volcán de Rib Eye</h4>
                     <p class="product-desc">Tortilla tostada al carbón, capa de queso crujiente y 150g de Rib Eye.</p>
                     <p class="product-price">$145 MXN</p>
-                    <a href="https://wa.me/525587654321?text=¡Hola!%20Vengo%20de%20su%20menú%20digital.%20Me%20gustaría%20ordenar:%20Volcán%20de%20Rib%20Eye%20($145)." target="_blank" class="btn-buy">Pedir ahora</a>
+                    <div class="order-controls">
+                        <div class="qty-selector">
+                            <button class="btn-qty minus">-</button>
+                            <span class="qty-number">1</span>
+                            <button class="btn-qty plus">+</button>
+                        </div>
+                        <button class="btn-buy" data-phone="525587654321" data-product="Volcán de Rib Eye" data-price="145">Pedir</button>
+                    </div>
                 </div>
             </div>
 
@@ -66,7 +89,14 @@
                     <h4 class="product-name">Agua de Horchata con Coco</h4>
                     <p class="product-desc">500ml. Receta de la casa con trozos de coco natural y un toque de canela.</p>
                     <p class="product-price">$45 MXN</p>
-                    <a href="https://wa.me/525587654321?text=¡Hola!%20Vengo%20de%20su%20menú%20digital.%20Me%20gustaría%20ordenar:%20Agua%20de%20Horchata%20($45)." target="_blank" class="btn-buy">Pedir ahora</a>
+                    <div class="order-controls">
+                        <div class="qty-selector">
+                            <button class="btn-qty minus">-</button>
+                            <span class="qty-number">1</span>
+                            <button class="btn-qty plus">+</button>
+                        </div>
+                        <button class="btn-buy" data-phone="525587654321" data-product="Agua de Horchata con Coco" data-price="45">Pedir</button>
+                    </div>
                 </div>
             </div>
         </main>
@@ -107,6 +137,49 @@
                         product.classList.add('hidden');
                     }
                 });
+            });
+        });
+
+        // Lógica de Cantidades y Generación de WhatsApp
+        const orderControls = document.querySelectorAll('.order-controls');
+
+        orderControls.forEach(control => {
+            const btnMinus = control.querySelector('.minus');
+            const btnPlus = control.querySelector('.plus');
+            const qtyNumber = control.querySelector('.qty-number');
+            const btnBuy = control.querySelector('.btn-buy');
+
+            let quantity = 1; // Cantidad inicial
+
+            // Botón de restar
+            btnMinus.addEventListener('click', () => {
+                if (quantity > 1) {
+                    quantity--;
+                    qtyNumber.textContent = quantity;
+                }
+            });
+
+            // Botón de sumar
+            btnPlus.addEventListener('click', () => {
+                quantity++;
+                qtyNumber.textContent = quantity;
+            });
+
+            // Botón de Pedir (Calcula y redirige)
+            btnBuy.addEventListener('click', () => {
+                const productName = btnBuy.getAttribute('data-product');
+                const productPrice = parseInt(btnBuy.getAttribute('data-price'));
+                const phone = btnBuy.getAttribute('data-phone');
+                
+                // Calculamos el total
+                const total = productPrice * quantity;
+                
+                // Armamos el mensaje dinámico
+                const message = `¡Hola! Quiero hacer un pedido desde su menú digital:\n\n🍽️ ${quantity}x ${productName}\n💵 Total estimado: $${total} MXN\n\n¿Me pueden confirmar el tiempo de envío?`;
+                
+                // Codificamos el mensaje para URL y redirigimos
+                const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
             });
         });
     </script>
