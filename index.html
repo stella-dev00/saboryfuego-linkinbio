@@ -30,7 +30,7 @@
                 <button class="filter-btn" data-filter="postres">Postres</button>
             </nav>
 
-            <div class="product-card" data-category="especialidades">
+            <div class="product-card" data-category="especialidades" data-name="Orden de Tacos al Pastor" data-price="95">
                 <div class="product-image" style="background-color: #ddd;"></div>
                 <div class="product-info">
                     <h4 class="product-name">Orden de Tacos al Pastor (3)</h4>
@@ -46,7 +46,7 @@
                 </div>
             </div>
 
-            <div class="product-card" data-category="especialidades">
+            <div class="product-card" data-category="especialidades" data-name="Gringa de Sirloin" data-price="120">
                 <div class="product-image" style="background-color: #ccc;"></div>
                 <div class="product-info">
                     <h4 class="product-name">Gringa de Sirloin</h4>
@@ -61,7 +61,7 @@
                 </div>
             </div>
 
-            <div class="product-card" data-category="especialidades">
+            <div class="product-card" data-category="especialidades" data-name="Volcán de Rib Eye" data-price="145">
                 <div class="product-image" style="background-color: #bbb;"></div>
                 <div class="product-info">
                     <h4 class="product-name">Volcán de Rib Eye</h4>
@@ -76,7 +76,7 @@
                 </div>
             </div>
 
-            <div class="product-card" data-category="bebidas">
+            <div class="product-card" data-category="bebidas" data-name="Agua de Horchata con Coco" data-price="45">
                 <div class="product-image" style="background-color: #aaa;"></div>
                 <div class="product-info">
                     <h4 class="product-name">Agua de Horchata con Coco</h4>
@@ -115,103 +115,117 @@
         </footer>
     </div>
     <script>
-        // Variables Globales
 const cart = {};
-const phone = "525587654321"; // Tu WhatsApp
+const phone = "525587654321"; // Tu WhatsApp real
 
-// 1. Lógica de Filtros (Se mantiene igual)
-const filterBtns = document.querySelectorAll('.filter-btn');
-const products = document.querySelectorAll('.product-card');
-
-filterBtns.forEach(btn => {
+// 1. Filtros
+document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-        filterBtns.forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const filterValue = btn.getAttribute('data-filter');
-        products.forEach(product => {
-            if (filterValue === 'all' || product.getAttribute('data-category') === filterValue) {
-                product.classList.remove('hidden');
-            } else {
-                product.classList.add('hidden');
-            }
+        const filter = btn.getAttribute('data-filter');
+        document.querySelectorAll('.product-card').forEach(p => {
+            p.classList.toggle('hidden', filter !== 'all' && p.getAttribute('data-category') !== filter);
         });
     });
 });
 
-// 2. Lógica del Carrito y Cantidades
-const productCards = document.querySelectorAll('.product-card');
-const cartBar = document.getElementById('cart-bar');
-const totalItemsTxt = document.getElementById('total-items');
-const totalPriceTxt = document.getElementById('total-price');
-const btnWS = document.getElementById('btn-whatsapp-send');
-
-productCards.forEach(card => {
+// 2. Control de Cantidades (Corregido)
+document.querySelectorAll('.product-card').forEach(card => {
     const name = card.getAttribute('data-name');
-    const price = parseInt(card.getAttribute('data-price'));
-    const btnMinus = card.querySelector('.minus');
-    const btnPlus = card.querySelector('.plus');
+    const price = parseInt(card.getAttribute('data-price')) || 0;
     const qtyDisplay = card.querySelector('.qty-number');
 
-    let qty = 0;
+    card.querySelector('.plus').onclick = () => {
+        let currentQty = parseInt(qtyDisplay.textContent);
+        currentQty++;
+        updateCart(name, price, currentQty, qtyDisplay);
+    };
 
-    btnPlus.addEventListener('click', () => {
-        qty++;
-        updateProduct(name, price, qty, qtyDisplay);
-    });
-
-    btnMinus.addEventListener('click', () => {
-        if (qty > 0) {
-            qty--;
-            updateProduct(name, price, qty, qtyDisplay);
+    card.querySelector('.minus').onclick = () => {
+        let currentQty = parseInt(qtyDisplay.textContent);
+        if (currentQty > 0) {
+            currentQty--;
+            updateCart(name, price, currentQty, qtyDisplay);
         }
-    });
+    };
 });
 
-function updateProduct(name, price, qty, display) {
+function updateCart(name, price, qty, display) {
     display.textContent = qty;
-    
-    if (qty > 0) {
-        cart[name] = { qty, price };
-    } else {
-        delete cart[name];
-    }
+    if (qty > 0) cart[name] = { qty, price };
+    else delete cart[name];
     renderCartBar();
 }
 
 function renderCartBar() {
-    let totalQty = 0;
-    let totalPrice = 0;
-    
-    for (const item in cart) {
-        totalQty += cart[item].qty;
-        totalPrice += (cart[item].qty * cart[item].price);
-    }
+    let totalItems = 0; let totalMoney = 0;
+    Object.values(cart).forEach(item => {
+        totalItems += item.qty;
+        totalMoney += (item.qty * item.price);
+    });
 
-    if (totalQty > 0) {
-        cartBar.classList.remove('hidden');
-        totalItemsTxt.textContent = totalQty;
-        totalPriceTxt.textContent = `$${totalPrice} MXN`;
+    const bar = document.getElementById('cart-bar');
+    if (totalItems > 0) {
+        bar.classList.remove('hidden');
+        document.getElementById('total-items').textContent = totalItems;
+        document.getElementById('total-price').textContent = `$${totalMoney} MXN`;
     } else {
-        cartBar.classList.add('hidden');
+        bar.classList.add('hidden');
     }
 }
 
-// 3. Generar el mensaje de WhatsApp con TODOS los productos
-btnWS.addEventListener('click', () => {
-    let message = "¡Hola! Quiero hacer un pedido desde su menú digital:\n\n";
+// 3. Modal de Resumen
+const modal = document.getElementById('order-modal');
+document.getElementById('btn-whatsapp-send').onclick = () => {
+    const list = document.getElementById('summary-list');
+    list.innerHTML = '';
     let grandTotal = 0;
 
-    for (const item in cart) {
-        const subtotal = cart[item].qty * cart[item].price;
-        message += `• ${cart[item].qty}x ${item} ($${subtotal})\n`;
-        grandTotal += subtotal;
+    for (const [name, data] of Object.entries(cart)) {
+        const sub = data.qty * data.price;
+        grandTotal += sub;
+        list.innerHTML += `<div class="summary-item"><span>${data.qty}x ${name}</span> <span>$${sub}</span></div>`;
     }
+    list.innerHTML += `<hr><div class="summary-item"><strong>TOTAL</strong> <strong>$${grandTotal} MXN</strong></div>`;
+    modal.classList.remove('hidden');
+};
 
-    message += `\n💰 *Total estimado: $${grandTotal} MXN*\n\n¿Me confirman el pedido?`;
+document.getElementById('btn-close-modal').onclick = () => modal.classList.add('hidden');
 
-    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-});
+// 4. Envío Final
+document.getElementById('btn-confirm-whatsapp').onclick = () => {
+    const notes = document.getElementById('order-notes').value;
+    let message = "¡Hola! Quiero hacer un pedido:\n\n";
+    let total = 0;
+
+    for (const [name, data] of Object.entries(cart)) {
+        message += `• ${data.qty}x ${name} ($${data.qty * data.price})\n`;
+        total += (data.qty * data.price);
+    }
+    
+    if(notes) message += `\n📝 *Notas:* ${notes}\n`;
+    message += `\n💰 *Total: $${total} MXN*`;
+
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+};
     </script>
+
+    <div id="order-modal" class="modal hidden">
+    <div class="modal-content">
+        <h3>Revisa tu Pedido</h3>
+        <div id="summary-list"></div>
+        
+        <div class="extra-notes">
+            <label for="order-notes">Instrucciones especiales:</label>
+            <textarea id="order-notes" placeholder="Ej. Sin cebolla, que la gringa esté bien tostada..."></textarea>
+        </div>
+
+        <div class="modal-actions">
+            <button id="btn-close-modal" class="btn-secondary">Volver</button>
+            <button id="btn-confirm-whatsapp" class="btn-primary">Enviar a WhatsApp</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
