@@ -1,0 +1,173 @@
+/* Variables de Marca - Sabor y Fuego */
+:root {
+    --bg-color: #F1FAEE;      /* Crema */
+    --primary-color: #E63946; /* Rojo pasión */
+    --text-color: #1D3557;    /* Azul marino */
+    --card-bg: #FFFFFF;
+}
+
+/* Reset Básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Contenedor móvil */
+.container {
+    max-width: 480px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Header */
+.profile-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo-placeholder {
+    width: 120px;
+    height: 120px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px auto;
+    font-family: 'Bebas Neue', cursive;
+    padding: 10px;
+}
+
+.logo-placeholder h1 {
+    font-size: 24px;
+    line-height: 1.1;
+}
+
+.slogan {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 26px;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.bio {
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: 0.9;
+}
+
+/* Catalog */
+.section-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 28px;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 2px solid var(--primary-color);
+    display: inline-block;
+    padding-bottom: 5px;
+    width: 100%;
+}
+
+.product-card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.product-image {
+    width: 100%;
+    height: 200px;
+    /* In a real project, replace background-color with background-image */
+}
+
+.product-info {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-name {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 22px;
+    margin-bottom: 5px;
+}
+
+.product-desc {
+    font-size: 13px;
+    line-height: 1.4;
+    margin-bottom: 10px;
+    color: #555;
+    flex-grow: 1;
+}
+
+.product-price {
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: var(--text-color);
+}
+
+.btn-buy {
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.btn-buy:hover {
+    background-color: #c92f3a;
+}
+
+/* Logistics */
+.logistics {
+    background-color: var(--card-bg);
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.6;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* Social Links */
+.social-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-social {
+    background-color: transparent;
+    color: var(--text-color);
+    text-decoration: none;
+    text-align: center;
+    padding: 12px;
+    border: 2px solid var(--text-color);
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-social:hover {
+    background-color: var(--text-color);
+    color: white;
+}
